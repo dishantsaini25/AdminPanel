@@ -1,28 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, Users, Car, Wrench, Receipt,
-  ChevronLeft, ChevronRight, Gauge, LogOut, Settings,
+  LayoutDashboard, Tag, ShoppingBag, BedDouble,
+  Palette, Settings, ChevronLeft, ChevronRight,
+  Gauge, LogOut, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', href: '/admin',           icon: LayoutDashboard },
-  { label: 'Customers', href: '/admin/customers', icon: Users           },
-  { label: 'Vehicles',  href: '/admin/vehicles',  icon: Car             },
-  { label: 'Services',  href: '/admin/services',  icon: Wrench          },
-  { label: 'Billing',   href: '/admin/billing',   icon: Receipt         },
+  { label: 'Category',  href: '/admin/category',  icon: Tag             },
+  { label: 'Products',  href: '/admin/product',   icon: ShoppingBag     },
+  { label: 'Rooms',     href: '/admin/room',       icon: BedDouble       },
+  { label: 'Colors',    href: '/admin/color',      icon: Palette         },
 ];
 
 const bottomItems = [
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
-export default function DashSidebar({ mobileOpen, onClose }) {
-  const pathname  = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+export default function DashSidebar({ mobileOpen, onClose, collapsed, onCollapse }) {
+  const pathname = usePathname();
 
   return (
     <>
@@ -39,32 +38,35 @@ export default function DashSidebar({ mobileOpen, onClose }) {
           'fixed top-0 left-0 h-full z-30 flex flex-col',
           'bg-[#0d1b2a] text-white transition-all duration-300',
           'border-r border-white/5',
-          collapsed ? 'w-[72px]' : 'w-64',
+          collapsed ? 'w-[88px]' : 'w-64',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
         style={{ boxShadow: '4px 0 24px rgba(0,0,0,0.3)' }}
       >
-        {/* Logo */}
-        <div className={`flex items-center h-16 px-4 border-b border-white/5 ${collapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-teal-900/50">
-              <Gauge className="w-5 h-5 text-white" />
-            </div>
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="text-sm font-bold text-white leading-tight">AdminPanel</p>
-                <p className="text-[10px] text-teal-400 font-medium">Pro Dashboard</p>
-              </div>
-            )}
+        {/* Logo + collapse toggle */}
+        <div className="flex items-center justify-between h-16 px-3 py-3 border-b border-white/5">
+          {/* Brand icon — always visible */}
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-teal-900/50">
+            <Gauge className="w-5 h-5 text-white" />
           </div>
 
+          {/* Text — only when expanded */}
+          {!collapsed && (
+            <div className="flex-1 min-w-0 ml-3">
+              <p className="text-sm font-bold text-white leading-tight">AdminPanel</p>
+              <p className="text-[10px] text-teal-400 font-medium">Pro Dashboard</p>
+            </div>
+          )}
+
+          {/* Collapse / expand button — always visible on desktop */}
           <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex w-6 h-6 items-center justify-center rounded-lg hover:bg-white/10 transition shrink-0"
+            onClick={() => onCollapse(!collapsed)}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="hidden lg:flex shrink-0 w-8 h-8 items-center justify-center rounded-lg hover:bg-white/10 transition ml-1"
           >
             {collapsed
-              ? <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-              : <ChevronLeft  className="w-3.5 h-3.5 text-slate-400" />}
+              ? <PanelLeftOpen  className="w-4 h-4 text-teal-400" />
+              : <PanelLeftClose className="w-4 h-4 text-slate-400" />}
           </button>
         </div>
 
@@ -76,7 +78,7 @@ export default function DashSidebar({ mobileOpen, onClose }) {
         )}
 
         {/* Nav items */}
-        <nav className="flex-1 overflow-y-auto px-2 space-y-0.5 pb-4">
+        <nav className="flex-1 px-2 space-y-0.5 pb-4 pt-2">
           {navItems.map(({ label, href, icon: Icon }) => {
             const active = pathname === href || (href !== '/admin' && pathname.startsWith(href));
             return (
